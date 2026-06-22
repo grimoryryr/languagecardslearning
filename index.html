@@ -1,3 +1,1153 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spanish Words</title>
+  <style>
+    :root {
+      --bg: #f6f6f4;
+      --panel: #ffffff;
+      --text: #101010;
+      --muted: #737373;
+      --line: #ddddda;
+      --soft: #efefec;
+      --dark: #101010;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #ffffff 0, transparent 32rem),
+        linear-gradient(135deg, #f8f8f6, #e9e9e6);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1140px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 7vw, 76px);
+      line-height: 0.92;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 620px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .stat {
+      min-width: 96px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(14px);
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 6px;
+      margin-bottom: 18px;
+      width: fit-content;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .tab {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .tab.active {
+      background: var(--dark);
+      color: #ffffff;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(330px, 0.85fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .quiz-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .session-pill {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #ffffff;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .session-pill.urgent {
+      border-color: #d72d2d;
+      background: #d72d2d;
+      color: #ffffff;
+    }
+
+    .quiz-word {
+      min-height: 152px;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-radius: 26px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      text-align: center;
+      font-size: clamp(40px, 9vw, 74px);
+      font-weight: 850;
+      overflow-wrap: anywhere;
+    }
+
+    .answers {
+      display: grid;
+      gap: 10px;
+    }
+
+    .answer {
+      min-height: 54px;
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #ffffff;
+      color: var(--text);
+      text-align: left;
+      font-weight: 720;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+      overflow-wrap: anywhere;
+    }
+
+    .answer:hover {
+      transform: translateY(-1px);
+      border-color: #111111;
+    }
+
+    .answer.correct {
+      background: #111111;
+      border-color: #111111;
+      color: #ffffff;
+    }
+
+    .answer.wrong {
+      background: #e7e7e4;
+      color: #555555;
+      text-decoration: line-through;
+    }
+
+    .message {
+      min-height: 30px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-weight: 720;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .button {
+      min-height: 46px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 18px;
+      background: var(--dark);
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .button.secondary {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    .button.danger {
+      background: #e9e9e6;
+      color: #222222;
+    }
+
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .form {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #202020;
+      font-size: 14px;
+      font-weight: 760;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 0 15px;
+      background: #ffffff;
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #111111;
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .mode-box {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fafaf8;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .helper {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .word-list {
+      display: grid;
+      gap: 9px;
+      max-height: 500px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .word-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #ffffff;
+    }
+
+    .word-main {
+      min-width: 0;
+    }
+
+    .word-main strong,
+    .word-main span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .word-main span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .word-score {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .delete {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: #f4f4f1;
+      color: #111111;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .empty {
+      padding: 18px;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      background: #fafaf8;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .chart-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .chart-card h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 210px;
+      display: block;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 8px;
+      max-height: 280px;
+      overflow: auto;
+      margin-top: 14px;
+    }
+
+    .history-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #ffffff;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .history-item strong {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        display: block;
+      }
+
+      .stats {
+        justify-content: flex-start;
+        margin-top: 18px;
+      }
+
+      .layout,
+      .charts,
+      .mode-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        width: 100%;
+      }
+
+      .tab {
+        flex: 1;
+      }
+
+      .word-row {
+        grid-template-columns: 1fr auto;
+      }
+
+      .word-score {
+        grid-column: 1 / -1;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>Spanish<br>Words</h1>
+        <p class="subtitle">
+          Добавляйте слова, проходите опросы по времени или по выбранному числу карточек.
+          Сложные слова будут попадаться чаще, а история попыток сохранится локально.
+        </p>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <strong id="totalWords">0</strong>
+          <span>слов</span>
+        </div>
+        <div class="stat">
+          <strong id="sessionQuestions">0</strong>
+          <span>вопросов</span>
+        </div>
+        <div class="stat">
+          <strong id="sessionCorrect">0</strong>
+          <span>верно</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" type="button" data-view="train">Опрос</button>
+      <button class="tab" type="button" data-view="words">Словарь</button>
+      <button class="tab" type="button" data-view="history">Статистика</button>
+    </nav>
+
+    <div id="trainView" class="layout">
+      <section class="panel">
+        <div class="quiz-head">
+          <h2>Выберите правильный ответ</h2>
+          <div id="sessionStatus" class="session-pill">Сессия не начата</div>
+        </div>
+
+        <div id="quizWord" class="quiz-word">Añade palabras</div>
+        <div id="answers" class="answers"></div>
+        <div id="message" class="message"></div>
+
+        <div class="actions">
+          <button id="nextQuestion" class="button" type="button">Следующее</button>
+          <button id="finishSession" class="button secondary" type="button">Завершить</button>
+          <button id="swapDirection" class="button secondary" type="button">Испанский → русский</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Режим опроса</h2>
+        <div class="mode-box">
+          <label for="quizMode">Тип сессии</label>
+          <select id="quizMode">
+            <option value="timer">По таймеру</option>
+            <option value="cards">По количеству карточек</option>
+          </select>
+
+          <div id="timerSettings" class="mode-grid">
+            <div>
+              <label for="timerMinutes">Длительность</label>
+              <select id="timerMinutes">
+                <option value="5">5 минут</option>
+                <option value="10">10 минут</option>
+                <option value="15">15 минут</option>
+              </select>
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <p class="helper">В таймере участвуют все карточки из словаря.</p>
+            </div>
+          </div>
+
+          <div id="cardSettings" class="mode-grid hidden">
+            <div>
+              <label for="cardCount">Карточек в сессии</label>
+              <input id="cardCount" type="number" min="1" value="10" />
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <p class="helper">Карточки выбираются случайно из всего словаря.</p>
+            </div>
+          </div>
+
+          <button id="startSession" class="button" type="button">Начать опрос</button>
+        </div>
+
+        <h2 style="margin-top: 20px;">Добавить слово</h2>
+        <form id="addForm" class="form">
+          <div>
+            <label for="spanish">Испанское слово</label>
+            <input id="spanish" autocomplete="off" placeholder="casa" required />
+          </div>
+          <div>
+            <label for="russian">Перевод</label>
+            <input id="russian" autocomplete="off" placeholder="дом" required />
+          </div>
+          <button class="button secondary" type="submit">Добавить</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="wordsView" class="layout hidden">
+      <section class="panel">
+        <h2>Управление</h2>
+        <form id="addFormSecond" class="form">
+          <div>
+            <label for="spanishSecond">Испанское слово</label>
+            <input id="spanishSecond" autocomplete="off" placeholder="libro" required />
+          </div>
+          <div>
+            <label for="russianSecond">Перевод</label>
+            <input id="russianSecond" autocomplete="off" placeholder="книга" required />
+          </div>
+          <button class="button" type="submit">Добавить</button>
+        </form>
+
+        <div class="actions">
+          <button id="exportWords" class="button secondary" type="button">Экспорт</button>
+          <button id="importWords" class="button secondary" type="button">Импорт</button>
+          <button id="resetProgress" class="button danger" type="button">Сбросить прогресс</button>
+          <input id="importFile" class="hidden" type="file" accept="application/json" />
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Мой словарь</h2>
+        <div id="wordList" class="word-list"></div>
+      </section>
+    </div>
+
+    <div id="historyView" class="hidden">
+      <section class="panel">
+        <div class="quiz-head">
+          <h2>Прошлые попытки</h2>
+          <button id="showHistory" class="button secondary" type="button">Обновить графики</button>
+        </div>
+
+        <div id="historyEmpty" class="empty hidden">Истории пока нет. Завершите хотя бы один опрос, и здесь появятся графики.</div>
+
+        <div id="historyContent">
+          <div class="charts">
+            <div class="chart-card">
+              <h3>Точность по попыткам</h3>
+              <canvas id="accuracyChart" width="600" height="320"></canvas>
+            </div>
+            <div class="chart-card">
+              <h3>Количество вопросов</h3>
+              <canvas id="questionsChart" width="600" height="320"></canvas>
+            </div>
+          </div>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "spanishWords.words.v2";
+    const HISTORY_KEY = "spanishWords.history.v1";
+
+    const fallbackRussian = [
+      "дом", "книга", "город", "еда", "вода", "друг", "работа", "день",
+      "ночь", "улица", "школа", "семья", "время", "дверь", "окно", "стол",
+      "машина", "музыка", "письмо", "море", "солнце", "голос", "рука", "жизнь"
+    ];
+
+    const fallbackSpanish = [
+      "casa", "libro", "ciudad", "comida", "agua", "amigo", "trabajo", "día",
+      "noche", "calle", "escuela", "familia", "tiempo", "puerta", "ventana", "mesa",
+      "coche", "música", "carta", "mar", "sol", "voz", "mano", "vida"
+    ];
+
+    let words = loadWords();
+    let history = loadHistory();
+    let current = null;
+    let locked = false;
+    let reverseMode = false;
+    let session = createEmptySession();
+    let timerId = null;
+
+    const totalWords = document.querySelector("#totalWords");
+    const sessionQuestions = document.querySelector("#sessionQuestions");
+    const sessionCorrect = document.querySelector("#sessionCorrect");
+    const quizWord = document.querySelector("#quizWord");
+    const answers = document.querySelector("#answers");
+    const message = document.querySelector("#message");
+    const wordList = document.querySelector("#wordList");
+    const sessionStatus = document.querySelector("#sessionStatus");
+    const quizMode = document.querySelector("#quizMode");
+    const timerSettings = document.querySelector("#timerSettings");
+    const cardSettings = document.querySelector("#cardSettings");
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => switchView(tab.dataset.view));
+    });
+
+    quizMode.addEventListener("change", () => {
+      const isTimer = quizMode.value === "timer";
+      timerSettings.classList.toggle("hidden", !isTimer);
+      cardSettings.classList.toggle("hidden", isTimer);
+    });
+
+    document.querySelector("#addForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      addWordFromInputs("#spanish", "#russian");
+    });
+
+    document.querySelector("#addFormSecond").addEventListener("submit", (event) => {
+      event.preventDefault();
+      addWordFromInputs("#spanishSecond", "#russianSecond");
+    });
+
+    document.querySelector("#startSession").addEventListener("click", startSession);
+    document.querySelector("#finishSession").addEventListener("click", () => finishSession("manual"));
+    document.querySelector("#nextQuestion").addEventListener("click", makeQuestion);
+    document.querySelector("#showHistory").addEventListener("click", renderHistory);
+
+    document.querySelector("#swapDirection").addEventListener("click", () => {
+      reverseMode = !reverseMode;
+      document.querySelector("#swapDirection").textContent = reverseMode
+        ? "Русский → испанский"
+        : "Испанский → русский";
+      if (session.active) makeQuestion();
+    });
+
+    document.querySelector("#resetProgress").addEventListener("click", () => {
+      words = words.map((word) => ({
+        ...word,
+        correct: 0,
+        wrong: 0,
+        seen: 0,
+        weight: 3
+      }));
+      saveWords();
+      render();
+      if (session.active) makeQuestion();
+    });
+
+    document.querySelector("#exportWords").addEventListener("click", () => {
+      const file = new Blob([JSON.stringify(words, null, 2)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(file);
+      link.download = "spanish-words.json";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    document.querySelector("#importWords").addEventListener("click", () => {
+      document.querySelector("#importFile").click();
+    });
+
+    document.querySelector("#importFile").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        const imported = JSON.parse(await file.text());
+        if (!Array.isArray(imported)) throw new Error("Wrong format");
+
+        imported.forEach((item) => {
+          if (item.spanish && item.russian) {
+            addWord(String(item.spanish), String(item.russian), false);
+          }
+        });
+
+        saveWords();
+        render();
+        if (session.active) makeQuestion();
+        message.textContent = "Слова импортированы.";
+      } catch {
+        message.textContent = "Не удалось импортировать файл.";
+      }
+
+      event.target.value = "";
+    });
+
+    function normalizeWord(word) {
+      return {
+        id: word.id || makeId(),
+        spanish: word.spanish,
+        russian: word.russian,
+        correct: Number(word.correct || 0),
+        wrong: Number(word.wrong || 0),
+        seen: Number(word.seen || 0),
+        weight: Number(word.weight || 3)
+      };
+    }
+
+    function loadWords() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (!saved) {
+        return [
+          { spanish: "hola", russian: "привет" },
+          { spanish: "gracias", russian: "спасибо" },
+          { spanish: "casa", russian: "дом" },
+          { spanish: "libro", russian: "книга" }
+        ].map(normalizeWord);
+      }
+
+      try {
+        return JSON.parse(saved).map(normalizeWord);
+      } catch {
+        return [];
+      }
+    }
+
+    function loadHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveWords() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+    }
+
+    function saveHistory() {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(-80)));
+    }
+
+    function createEmptySession() {
+      return {
+        active: false,
+        mode: null,
+        startedAt: null,
+        endsAt: null,
+        selectedIds: [],
+        completedIds: [],
+        questions: 0,
+        correct: 0,
+        wrong: 0
+      };
+    }
+
+    function startSession() {
+      if (!words.length) {
+        message.textContent = "Добавьте хотя бы одно слово.";
+        return;
+      }
+
+      clearInterval(timerId);
+      const mode = quizMode.value;
+      const now = Date.now();
+      session = createEmptySession();
+      session.active = true;
+      session.mode = mode;
+      session.startedAt = now;
+
+      if (mode === "timer") {
+        const minutes = Number(document.querySelector("#timerMinutes").value);
+        session.endsAt = now + minutes * 60 * 1000;
+        session.selectedIds = words.map((word) => word.id);
+        timerId = setInterval(updateTimer, 500);
+      } else {
+        const requested = Math.max(1, Number(document.querySelector("#cardCount").value || 1));
+        const count = Math.min(requested, words.length);
+        session.selectedIds = shuffle(words).slice(0, count).map((word) => word.id);
+      }
+
+      locked = false;
+      message.textContent = "";
+      renderSessionStats();
+      makeQuestion();
+    }
+
+    function finishSession(reason) {
+      if (!session.active) {
+        resetCurrentSession();
+        message.textContent = "Сессия уже завершена.";
+        return;
+      }
+
+      clearInterval(timerId);
+      const finishedSession = { ...session };
+      const resultText = finishedSession.mode === "timer"
+        ? `Сессия завершена. Верно: ${finishedSession.correct}. Ошибок: ${finishedSession.wrong}.`
+        : "Результат сохранен в статистике. Можно начать новый опрос.";
+
+      if (finishedSession.questions > 0) {
+        const finishedAt = Date.now();
+        history.push({
+          id: makeId(),
+          mode: finishedSession.mode,
+          reason,
+          date: new Date(finishedAt).toISOString(),
+          durationSeconds: Math.max(1, Math.round((finishedAt - finishedSession.startedAt) / 1000)),
+          plannedCards: finishedSession.mode === "cards" ? finishedSession.selectedIds.length : words.length,
+          questions: finishedSession.questions,
+          correct: finishedSession.correct,
+          wrong: finishedSession.wrong,
+          accuracy: Math.round((finishedSession.correct / finishedSession.questions) * 100)
+        });
+        saveHistory();
+      }
+
+      resetCurrentSession();
+      answers.innerHTML = "";
+      quizWord.textContent = "Сессия завершена";
+      message.textContent = resultText;
+      render();
+      renderHistory();
+    }
+
+    function resetCurrentSession() {
+      clearInterval(timerId);
+      session = createEmptySession();
+      current = null;
+      locked = false;
+      sessionStatus.classList.remove("urgent");
+      renderSessionStats();
+    }
+
+    function updateTimer() {
+      if (!session.active || session.mode !== "timer") return;
+
+      if (Date.now() >= session.endsAt) {
+        finishSession("timer");
+        return;
+      }
+
+      renderSessionStats();
+    }
+
+    function addWordFromInputs(spanishSelector, russianSelector) {
+      const spanishInput = document.querySelector(spanishSelector);
+      const russianInput = document.querySelector(russianSelector);
+
+      const spanish = spanishInput.value.trim();
+      const russian = russianInput.value.trim();
+
+      if (!spanish || !russian) return;
+
+      addWord(spanish, russian, true);
+      spanishInput.value = "";
+      russianInput.value = "";
+      spanishInput.focus();
+    }
+
+    function addWord(spanish, russian, shouldRender) {
+      const exists = words.some((word) =>
+        word.spanish.toLowerCase() === spanish.toLowerCase() &&
+        word.russian.toLowerCase() === russian.toLowerCase()
+      );
+
+      if (!exists) {
+        words.push(normalizeWord({ spanish, russian }));
+        saveWords();
+      }
+
+      if (shouldRender) {
+        render();
+        if (session.active) makeQuestion();
+      }
+    }
+
+    function deleteWord(id) {
+      words = words.filter((word) => word.id !== id);
+      session.selectedIds = session.selectedIds.filter((wordId) => wordId !== id);
+      session.completedIds = session.completedIds.filter((wordId) => wordId !== id);
+      saveWords();
+      render();
+      if (session.active) makeQuestion();
+    }
+
+    function makeQuestion() {
+      if (!session.active) {
+        quizWord.textContent = "Начните опрос";
+        answers.innerHTML = '<div class="empty">Выберите режим и нажмите «Начать опрос».</div>';
+        message.textContent = "";
+        return;
+      }
+
+      locked = false;
+      answers.innerHTML = "";
+      message.textContent = "";
+
+      const available = getSessionWords();
+      if (!available.length) {
+        finishSession("cards");
+        return;
+      }
+
+      current = session.mode === "timer" ? pickWeightedWord(available) : pickRandom(available);
+
+      const question = reverseMode ? current.russian : current.spanish;
+      const correct = reverseMode ? current.spanish : current.russian;
+      const variants = makeAnswerVariants(correct);
+
+      quizWord.textContent = question;
+
+      variants.forEach((option) => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.type = "button";
+        button.textContent = option;
+        button.addEventListener("click", () => checkAnswer(button, option, correct));
+        answers.appendChild(button);
+      });
+
+      renderSessionStats();
+    }
+
+    function getSessionWords() {
+      const selected = words.filter((word) => session.selectedIds.includes(word.id));
+      if (session.mode === "cards") {
+        return selected.filter((word) => !session.completedIds.includes(word.id));
+      }
+      return selected;
+    }
+
+    function pickWeightedWord(items) {
+      const totalWeight = items.reduce((sum, word) => sum + word.weight, 0);
+      let point = Math.random() * totalWeight;
+
+      for (const word of items) {
+        point -= word.weight;
+        if (point <= 0) return word;
+      }
+
+      return items[0];
+    }
+
+    function updateWordStats(word, isCorrect) {
+      word.seen += 1;
+
+      if (isCorrect) {
+        word.correct += 1;
+        word.weight = Math.max(1, word.weight - 1);
+      } else {
+        word.wrong += 1;
+        word.weight = Math.min(15, word.weight + 3);
+      }
+
+      saveWords();
+    }
+
+    function makeAnswerVariants(correct) {
+      const fromWords = words
+        .map((word) => reverseMode ? word.spanish : word.russian)
+        .filter((value) => value !== correct);
+
+      const fallback = reverseMode ? fallbackSpanish : fallbackRussian;
+
+      const pool = [...fromWords, ...fallback]
+        .filter((value, index, array) => value !== correct && array.indexOf(value) === index);
+
+      const wrong = shuffle(pool).slice(0, 3);
+
+      while (wrong.length < 3) {
+        wrong.push(reverseMode ? `palabra ${wrong.length + 1}` : `вариант ${wrong.length + 1}`);
+      }
+
+      return shuffle([correct, ...wrong]);
+    }
+
+    function checkAnswer(button, option, correct) {
+      if (locked || !session.active) return;
+
+      locked = true;
+      const isCorrect = option === correct;
+
+      session.questions += 1;
+      session.correct += isCorrect ? 1 : 0;
+      session.wrong += isCorrect ? 0 : 1;
+      if (session.mode === "cards" && current) {
+        session.completedIds.push(current.id);
+      }
+
+      updateWordStats(current, isCorrect);
+
+      if (isCorrect) {
+        button.classList.add("correct");
+        message.textContent = "Верно.";
+      } else {
+        button.classList.add("wrong");
+        message.textContent = `Правильный ответ: ${correct}`;
+
+        [...answers.children].forEach((child) => {
+          if (child.textContent === correct) {
+            child.classList.add("correct");
+          }
+        });
+      }
+
+      render();
+
+      if (session.mode === "cards" && session.completedIds.length >= session.selectedIds.length) {
+        setTimeout(() => finishSession("cards"), 700);
+      } else {
+        setTimeout(() => {
+          if (session.active && locked) makeQuestion();
+        }, 900);
+      }
+    }
+
+    function render() {
+      renderStats();
+      renderSessionStats();
+      renderWordList();
+    }
+
+    function renderStats() {
+      totalWords.textContent = words.length;
+      sessionQuestions.textContent = session.questions;
+      sessionCorrect.textContent = session.correct;
+    }
+
+    function renderSessionStats() {
+      if (!session.active) {
+        sessionStatus.classList.remove("urgent");
+        sessionStatus.textContent = "Сессия не начата";
+        renderStats();
+        return;
+      }
+
+      if (session.mode === "timer") {
+        const leftMs = Math.max(0, session.endsAt - Date.now());
+        sessionStatus.classList.toggle("urgent", leftMs <= 60000);
+        sessionStatus.textContent = `Осталось ${formatTime(leftMs)}`;
+      } else {
+        sessionStatus.classList.remove("urgent");
+        sessionStatus.textContent = `${session.completedIds.length}/${session.selectedIds.length} карточек`;
+      }
+
+      renderStats();
+    }
+
+    function renderWordList() {
+      wordList.innerHTML = "";
+
+      if (!words.length) {
+        wordList.innerHTML = '<div class="empty">Слов пока нет.</div>';
+        return;
+      }
+
+      const sorted = [...words].sort((a, b) => b.weight - a.weight);
+
+      sorted.forEach((word) => {
+        const row = document.createElement("div");
+        row.className = "word-row";
+
+        const left = document.createElement("div");
+        left.className = "word-main";
+        left.innerHTML = `<strong>${escapeHtml(word.spanish)}</strong><span>${escapeHtml(word.russian)}</span>`;
+
+        const stat = document.createElement("div");
+        stat.className = "word-score";
+        stat.textContent = `ошибок: ${word.wrong} · вес: ${word.weight}`;
+
+        const remove = document.createElement("button");
+        remove.className = "delete";
+        remove.type = "button";
+        remove.textContent = "×";
+        remove.title = "Удалить";
+        remove.addEventListener("click", () => deleteWord(word.id));
+
+        row.append(left, stat, remove);
+        wordList.appendChild(row);
+      });
+    }
+
+    function renderHistory() {
+      const empty = document.querySelector("#historyEmpty");
+      const content = document.querySelector("#historyContent");
+      const list = document.querySelector("#historyList");
+
+      if (!history.length) {
+        empty.classList.remove("hidden");
+        content.classList.add("hidden");
+        return;
+      }
+
+      empty.classList.add("hidden");
+      content.classList.remove("hidden");
       drawLineChart(document.querySelector("#accuracyChart"), history.map((item) => item.accuracy), "%");
       drawLineChart(document.querySelector("#questionsChart"), history.map((item) => item.questions), "");
 
