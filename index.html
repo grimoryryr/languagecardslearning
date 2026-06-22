@@ -1,787 +1,76 @@
-<!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Spanish Words</title>
-  <style>
-    :root {
-      --bg: #f4f4f1;
-      --panel: #ffffff;
-      --text: #111111;
-      --muted: #747474;
-      --line: #dedede;
-      --soft: #f0f0ee;
-      --dark: #111111;
-      --good: #111111;
-      --bad: #666666;
-      --radius: 22px;
-      --shadow: 0 18px 55px rgba(0, 0, 0, 0.08);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, #ffffff 0, transparent 32rem),
-        linear-gradient(135deg, #f7f7f4, #ececea);
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .app {
-      width: min(1080px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 28px 0 44px;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 18px;
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(38px, 7vw, 76px);
-      line-height: 0.92;
-      letter-spacing: 0;
-    }
-
-    .subtitle {
-      max-width: 560px;
-      margin: 14px 0 0;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.5;
-    }
-
-    .stats {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .stat {
-      min-width: 94px;
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(14px);
-      text-align: center;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 26px;
-      line-height: 1;
-    }
-
-    .stat span {
-      display: block;
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      padding: 6px;
-      margin-bottom: 18px;
-      width: fit-content;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.72);
-    }
-
-    .tab {
-      border: 0;
-      border-radius: 999px;
-      padding: 10px 16px;
-      background: transparent;
-      color: var(--muted);
-      font-weight: 750;
-    }
-
-    .tab.active {
-      background: var(--dark);
-      color: #ffffff;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(310px, 0.85fr);
-      gap: 16px;
-      align-items: start;
-    }
-
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.86);
-      box-shadow: var(--shadow);
-      padding: 20px;
-    }
-
-    .panel h2 {
-      margin: 0 0 16px;
-      font-size: 20px;
-      letter-spacing: 0;
-    }
-
-    .quiz-word {
-      min-height: 152px;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      margin-bottom: 16px;
-      border-radius: 26px;
-      background: var(--soft);
-      border: 1px solid var(--line);
-      text-align: center;
-      font-size: clamp(40px, 9vw, 74px);
-      font-weight: 850;
-      overflow-wrap: anywhere;
-    }
-
-    .answers {
-      display: grid;
-      gap: 10px;
-    }
-
-    .answer {
-      min-height: 54px;
-      width: 100%;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: #ffffff;
-      color: var(--text);
-      text-align: left;
-      font-weight: 720;
-      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
-      overflow-wrap: anywhere;
-    }
-
-    .answer:hover {
-      transform: translateY(-1px);
-      border-color: #111111;
-    }
-
-    .answer.correct {
-      background: #111111;
-      border-color: #111111;
-      color: #ffffff;
-    }
-
-    .answer.wrong {
-      background: #e7e7e4;
-      color: #555555;
-      text-decoration: line-through;
-    }
-
-    .message {
-      min-height: 30px;
-      margin-top: 14px;
-      color: var(--muted);
-      font-weight: 720;
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    .button {
-      min-height: 46px;
-      border: 0;
-      border-radius: 999px;
-      padding: 0 18px;
-      background: var(--dark);
-      color: #ffffff;
-      font-weight: 800;
-    }
-
-    .button.secondary {
-      border: 1px solid var(--line);
-      background: #ffffff;
-      color: var(--text);
-    }
-
-    .button.danger {
-      background: #e9e9e6;
-      color: #222222;
-    }
-
-    .form {
-      display: grid;
-      gap: 12px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 7px;
-      color: #202020;
-      font-size: 14px;
-      font-weight: 760;
-    }
-
-    input {
-      width: 100%;
-      min-height: 50px;
-      border: 1px solid var(--line);
-      border-radius: 17px;
-      padding: 0 15px;
-      background: #ffffff;
-      color: var(--text);
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #111111;
-      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
-    }
-
-    .word-list {
-      display: grid;
-      gap: 9px;
-      max-height: 500px;
-      overflow: auto;
-      padding-right: 2px;
-    }
-
-    .word-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: center;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: #ffffff;
-    }
-
-    .word-main {
-      min-width: 0;
-    }
-
-    .word-main strong,
-    .word-main span {
-      display: block;
-      overflow-wrap: anywhere;
-    }
-
-    .word-main span {
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .word-score {
-      color: var(--muted);
-      font-size: 13px;
-      text-align: right;
-    }
-
-    .delete {
-      width: 38px;
-      height: 38px;
-      border: 1px solid var(--line);
-      border-radius: 50%;
-      background: #f4f4f1;
-      color: #111111;
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .empty {
-      padding: 18px;
-      border: 1px dashed var(--line);
-      border-radius: 18px;
-      background: #fafaf8;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    @media (max-width: 820px) {
-      .topbar {
-        display: block;
-      }
-
-      .stats {
-        justify-content: flex-start;
-        margin-top: 18px;
-      }
-
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .tabs {
-        width: 100%;
-      }
-
-      .tab {
-        flex: 1;
-      }
-
-      .word-row {
-        grid-template-columns: 1fr auto;
-      }
-
-      .word-score {
-        grid-column: 1 / -1;
-        text-align: left;
-      }
-    }
-  </style>
-</head>
-<body>
-  <main class="app">
-    <header class="topbar">
-      <div>
-        <h1>Spanish<br>Words</h1>
-        <p class="subtitle">
-          Добавляйте испанские слова, проходите опросы и повторяйте чаще то, что дается сложнее.
-          Все хранится только в вашем браузере.
-        </p>
-      </div>
-
-      <div class="stats">
-        <div class="stat">
-          <strong id="totalWords">0</strong>
-          <span>слов</span>
-        </div>
-        <div class="stat">
-          <strong id="score">0</strong>
-          <span>верно</span>
-        </div>
-        <div class="stat">
-          <strong id="attempts">0</strong>
-          <span>попыток</span>
-        </div>
-      </div>
-    </header>
-
-    <nav class="tabs">
-      <button class="tab active" type="button" data-view="train">Опрос</button>
-      <button class="tab" type="button" data-view="words">Словарь</button>
-    </nav>
-
-    <div id="trainView" class="layout">
-      <section class="panel">
-        <h2>Выберите правильный ответ</h2>
-        <div id="quizWord" class="quiz-word">Añade palabras</div>
-        <div id="answers" class="answers"></div>
-        <div id="message" class="message"></div>
-
-        <div class="actions">
-          <button id="nextQuestion" class="button" type="button">Следующее</button>
-          <button id="swapDirection" class="button secondary" type="button">Испанский → русский</button>
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Добавить слово</h2>
-        <form id="addForm" class="form">
-          <div>
-            <label for="spanish">Испанское слово</label>
-            <input id="spanish" autocomplete="off" placeholder="casa" required />
-          </div>
-          <div>
-            <label for="russian">Перевод</label>
-            <input id="russian" autocomplete="off" placeholder="дом" required />
-          </div>
-          <button class="button" type="submit">Добавить</button>
-        </form>
-      </section>
-    </div>
-
-    <div id="wordsView" class="layout hidden">
-      <section class="panel">
-        <h2>Управление</h2>
-        <form id="addFormSecond" class="form">
-          <div>
-            <label for="spanishSecond">Испанское слово</label>
-            <input id="spanishSecond" autocomplete="off" placeholder="libro" required />
-          </div>
-          <div>
-            <label for="russianSecond">Перевод</label>
-            <input id="russianSecond" autocomplete="off" placeholder="книга" required />
-          </div>
-          <button class="button" type="submit">Добавить</button>
-        </form>
-
-        <div class="actions">
-          <button id="exportWords" class="button secondary" type="button">Экспорт</button>
-          <button id="importWords" class="button secondary" type="button">Импорт</button>
-          <button id="resetProgress" class="button danger" type="button">Сбросить прогресс</button>
-          <input id="importFile" class="hidden" type="file" accept="application/json" />
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Мой словарь</h2>
-        <div id="wordList" class="word-list"></div>
-      </section>
-    </div>
-  </main>
-
-  <script>
-    const STORAGE_KEY = "spanishWords.words.v2";
-    const SCORE_KEY = "spanishWords.score.v2";
-    const ATTEMPTS_KEY = "spanishWords.attempts.v2";
-
-    const fallbackRussian = [
-      "дом", "книга", "город", "еда", "вода", "друг", "работа", "день",
-      "ночь", "улица", "школа", "семья", "время", "дверь", "окно", "стол",
-      "машина", "музыка", "письмо", "море", "солнце", "голос", "рука", "жизнь"
-    ];
-
-    const fallbackSpanish = [
-      "casa", "libro", "ciudad", "comida", "agua", "amigo", "trabajo", "día",
-      "noche", "calle", "escuela", "familia", "tiempo", "puerta", "ventana", "mesa",
-      "coche", "música", "carta", "mar", "sol", "voz", "mano", "vida"
-    ];
-
-    let words = loadWords();
-    let current = null;
-    let locked = false;
-    let reverseMode = false;
-    let score = Number(localStorage.getItem(SCORE_KEY) || 0);
-    let attempts = Number(localStorage.getItem(ATTEMPTS_KEY) || 0);
-
-    const totalWords = document.querySelector("#totalWords");
-    const scoreEl = document.querySelector("#score");
-    const attemptsEl = document.querySelector("#attempts");
-    const quizWord = document.querySelector("#quizWord");
-    const answers = document.querySelector("#answers");
-    const message = document.querySelector("#message");
-    const wordList = document.querySelector("#wordList");
-
-    document.querySelectorAll(".tab").forEach((tab) => {
-      tab.addEventListener("click", () => switchView(tab.dataset.view));
-    });
-
-    document.querySelector("#addForm").addEventListener("submit", (event) => {
-      event.preventDefault();
-      addWordFromInputs("#spanish", "#russian");
-    });
-
-    document.querySelector("#addFormSecond").addEventListener("submit", (event) => {
-      event.preventDefault();
-      addWordFromInputs("#spanishSecond", "#russianSecond");
-    });
-
-    document.querySelector("#nextQuestion").addEventListener("click", makeQuestion);
-
-    document.querySelector("#swapDirection").addEventListener("click", () => {
-      reverseMode = !reverseMode;
-      document.querySelector("#swapDirection").textContent = reverseMode
-        ? "Русский → испанский"
-        : "Испанский → русский";
-      makeQuestion();
-    });
-
-    document.querySelector("#resetProgress").addEventListener("click", () => {
-      words = words.map((word) => ({
-        ...word,
-        correct: 0,
-        wrong: 0,
-        seen: 0,
-        weight: 3
-      }));
-      score = 0;
-      attempts = 0;
-      saveAll();
-      render();
-      makeQuestion();
-    });
-
-    document.querySelector("#exportWords").addEventListener("click", () => {
-      const file = new Blob([JSON.stringify(words, null, 2)], { type: "application/json" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(file);
-      link.download = "spanish-words.json";
-      link.click();
-      URL.revokeObjectURL(link.href);
-    });
-
-    document.querySelector("#importWords").addEventListener("click", () => {
-      document.querySelector("#importFile").click();
-    });
-
-    document.querySelector("#importFile").addEventListener("change", async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      try {
-        const imported = JSON.parse(await file.text());
-        if (!Array.isArray(imported)) throw new Error("Wrong format");
-
-        imported.forEach((item) => {
-          if (item.spanish && item.russian) {
-            addWord(String(item.spanish), String(item.russian), false);
-          }
-        });
-
-        saveAll();
-        render();
-        makeQuestion();
-        message.textContent = "Слова импортированы.";
-      } catch {
-        message.textContent = "Не удалось импортировать файл.";
-      }
-
-      event.target.value = "";
-    });
-
-    function normalizeWord(word) {
-      return {
-        id: word.id || crypto.randomUUID(),
-        spanish: word.spanish,
-        russian: word.russian,
-        correct: Number(word.correct || 0),
-        wrong: Number(word.wrong || 0),
-        seen: Number(word.seen || 0),
-        weight: Number(word.weight || 3)
-      };
-    }
-
-    function loadWords() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-
-      if (!saved) {
-        return [
-          { spanish: "hola", russian: "привет" },
-          { spanish: "gracias", russian: "спасибо" },
-          { spanish: "casa", russian: "дом" },
-          { spanish: "libro", russian: "книга" }
-        ].map(normalizeWord);
-      }
-
-      try {
-        return JSON.parse(saved).map(normalizeWord);
-      } catch {
-        return [];
-      }
-    }
-
-    function saveAll() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
-      localStorage.setItem(SCORE_KEY, String(score));
-      localStorage.setItem(ATTEMPTS_KEY, String(attempts));
-    }
-
-    function addWordFromInputs(spanishSelector, russianSelector) {
-      const spanishInput = document.querySelector(spanishSelector);
-      const russianInput = document.querySelector(russianSelector);
-
-      const spanish = spanishInput.value.trim();
-      const russian = russianInput.value.trim();
-
-      if (!spanish || !russian) return;
-
-      addWord(spanish, russian, true);
-      spanishInput.value = "";
-      russianInput.value = "";
-      spanishInput.focus();
-    }
-
-    function addWord(spanish, russian, shouldRender) {
-      const exists = words.some((word) =>
-        word.spanish.toLowerCase() === spanish.toLowerCase() &&
-        word.russian.toLowerCase() === russian.toLowerCase()
-      );
-
-      if (!exists) {
-        words.push(normalizeWord({ spanish, russian }));
-        saveAll();
-      }
-
-      if (shouldRender) {
-        render();
-        makeQuestion();
-      }
-    }
-
-    function deleteWord(id) {
-      words = words.filter((word) => word.id !== id);
-      saveAll();
-      render();
-      makeQuestion();
-    }
-
-    function pickWeightedWord() {
-      const totalWeight = words.reduce((sum, word) => sum + word.weight, 0);
-      let point = Math.random() * totalWeight;
-
-      for (const word of words) {
-        point -= word.weight;
-        if (point <= 0) return word;
-      }
-
-      return words[0];
-    }
-
-    function updateWordStats(word, isCorrect) {
-      word.seen += 1;
-
-      if (isCorrect) {
-        word.correct += 1;
-        word.weight = Math.max(1, word.weight - 1);
-      } else {
-        word.wrong += 1;
-        word.weight = Math.min(15, word.weight + 3);
-      }
-
-      saveAll();
-    }
-
-    function makeQuestion() {
-      locked = false;
-      answers.innerHTML = "";
-      message.textContent = "";
-
-      if (words.length < 1) {
-        current = null;
-        quizWord.textContent = "Añade palabras";
-        answers.innerHTML = '<div class="empty">Добавьте первое слово, чтобы начать.</div>';
-        return;
-      }
-
-      current = pickWeightedWord();
-
-      const question = reverseMode ? current.russian : current.spanish;
-      const correct = reverseMode ? current.spanish : current.russian;
-      const variants = makeAnswerVariants(correct);
-
-      quizWord.textContent = question;
-
-      variants.forEach((option) => {
-        const button = document.createElement("button");
-        button.className = "answer";
-        button.type = "button";
-        button.textContent = option;
-        button.addEventListener("click", () => checkAnswer(button, option, correct));
-        answers.appendChild(button);
-      });
-    }
-
-    function makeAnswerVariants(correct) {
-      const fromWords = words
-        .map((word) => reverseMode ? word.spanish : word.russian)
-        .filter((value) => value !== correct);
-
-      const fallback = reverseMode ? fallbackSpanish : fallbackRussian;
-
-      const pool = [...fromWords, ...fallback]
-        .filter((value, index, array) => value !== correct && array.indexOf(value) === index);
-
-      const wrong = shuffle(pool).slice(0, 3);
-
-      while (wrong.length < 3) {
-        wrong.push(reverseMode ? `palabra ${wrong.length + 1}` : `вариант ${wrong.length + 1}`);
-      }
-
-      return shuffle([correct, ...wrong]);
-    }
-
-    function checkAnswer(button, option, correct) {
-      if (locked) return;
-
-      locked = true;
-      attempts += 1;
-
-      const isCorrect = option === correct;
-      updateWordStats(current, isCorrect);
-
-      if (isCorrect) {
-        score += 1;
-        button.classList.add("correct");
-        message.textContent = "Верно.";
-      } else {
-        button.classList.add("wrong");
-        message.textContent = `Правильный ответ: ${correct}`;
-
-        [...answers.children].forEach((child) => {
-          if (child.textContent === correct) {
-            child.classList.add("correct");
-          }
-        });
-      }
-
-      saveAll();
-      render();
-    }
-
-    function render() {
-      renderStats();
-      renderWordList();
-    }
-
-    function renderStats() {
-      totalWords.textContent = words.length;
-      scoreEl.textContent = score;
-      attemptsEl.textContent = attempts;
-    }
-
-    function renderWordList() {
-      wordList.innerHTML = "";
-
-      if (!words.length) {
-        wordList.innerHTML = '<div class="empty">Слов пока нет.</div>';
-        return;
-      }
-
-      const sorted = [...words].sort((a, b) => b.weight - a.weight);
-
-      sorted.forEach((word) => {
+      drawLineChart(document.querySelector("#accuracyChart"), history.map((item) => item.accuracy), "%");
+      drawLineChart(document.querySelector("#questionsChart"), history.map((item) => item.questions), "");
+
+      list.innerHTML = "";
+      [...history].reverse().slice(0, 20).forEach((item) => {
         const row = document.createElement("div");
-        row.className = "word-row";
-
-        const left = document.createElement("div");
-        left.className = "word-main";
-        left.innerHTML = `<strong>${escapeHtml(word.spanish)}</strong><span>${escapeHtml(word.russian)}</span>`;
-
-        const stat = document.createElement("div");
-        stat.className = "word-score";
-        stat.textContent = `ошибок: ${word.wrong} · вес: ${word.weight}`;
-
-        const remove = document.createElement("button");
-        remove.className = "delete";
-        remove.type = "button";
-        remove.textContent = "×";
-        remove.title = "Удалить";
-        remove.addEventListener("click", () => deleteWord(word.id));
-
-        row.append(left, stat, remove);
-        wordList.appendChild(row);
+        row.className = "history-item";
+        const mode = item.mode === "timer" ? "таймер" : "карточки";
+        row.innerHTML = `
+          <div>
+            <strong>${item.accuracy}% · ${item.correct}/${item.questions}</strong><br>
+            ${formatDate(item.date)} · ${mode} · ${formatDuration(item.durationSeconds)}
+          </div>
+          <div>${item.reason === "timer" ? "время" : "завершено"}</div>
+        `;
+        list.appendChild(row);
       });
+    }
+
+    function drawLineChart(canvas, values, suffix) {
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      const pad = 34;
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = "#e0e0dd";
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 4; i += 1) {
+        const y = pad + ((height - pad * 2) / 3) * i;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(width - pad, y);
+        ctx.stroke();
+      }
+
+      const shown = values.slice(-12);
+      const max = Math.max(1, ...shown);
+      const min = Math.min(0, ...shown);
+      const range = Math.max(1, max - min);
+
+      ctx.strokeStyle = "#111111";
+      ctx.lineWidth = 4;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+
+      shown.forEach((value, index) => {
+        const x = shown.length === 1
+          ? width / 2
+          : pad + ((width - pad * 2) / (shown.length - 1)) * index;
+        const y = height - pad - ((value - min) / range) * (height - pad * 2);
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = "#111111";
+      shown.forEach((value, index) => {
+        const x = shown.length === 1
+          ? width / 2
+          : pad + ((width - pad * 2) / (shown.length - 1)) * index;
+        const y = height - pad - ((value - min) / range) * (height - pad * 2);
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = "#737373";
+      ctx.font = "22px system-ui, sans-serif";
+      ctx.fillText(`${shown[shown.length - 1] || 0}${suffix}`, pad, 28);
     }
 
     function switchView(view) {
@@ -791,10 +80,44 @@
 
       document.querySelector("#trainView").classList.toggle("hidden", view !== "train");
       document.querySelector("#wordsView").classList.toggle("hidden", view !== "words");
+      document.querySelector("#historyView").classList.toggle("hidden", view !== "history");
+
+      if (view === "history") renderHistory();
     }
 
     function shuffle(items) {
       return [...items].sort(() => Math.random() - 0.5);
+    }
+
+    function pickRandom(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function makeId() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function formatTime(ms) {
+      const totalSeconds = Math.ceil(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function formatDuration(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const rest = seconds % 60;
+      return `${minutes}:${String(rest).padStart(2, "0")}`;
+    }
+
+    function formatDate(value) {
+      return new Intl.DateTimeFormat("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(new Date(value));
     }
 
     function escapeHtml(value) {
@@ -808,6 +131,7 @@
 
     render();
     makeQuestion();
+    renderHistory();
   </script>
 </body>
 </html>
