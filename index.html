@@ -33,7 +33,8 @@
 
     button,
     input,
-    select {
+    select,
+    textarea {
       font: inherit;
     }
 
@@ -279,7 +280,8 @@
     }
 
     input,
-    select {
+    select,
+    textarea {
       width: 100%;
       min-height: 50px;
       border: 1px solid var(--line);
@@ -290,8 +292,16 @@
       outline: none;
     }
 
+    textarea {
+      min-height: 140px;
+      padding: 14px 15px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
     input:focus,
-    select:focus {
+    select:focus,
+    textarea:focus {
       border-color: #111111;
       box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
     }
@@ -424,6 +434,21 @@
       font-size: 13px;
     }
 
+    .translation-output {
+      min-height: 120px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fafaf8;
+      color: var(--text);
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .translation-output.muted {
+      color: var(--muted);
+    }
+
     .history-item strong {
       color: var(--text);
       font-size: 14px;
@@ -498,6 +523,7 @@
     <nav class="tabs">
       <button class="tab active" type="button" data-view="train">Опрос</button>
       <button class="tab" type="button" data-view="words">Словарь</button>
+      <button class="tab" type="button" data-view="translator">Переводчик</button>
       <button class="tab" type="button" data-view="history">Статистика</button>
     </nav>
 
@@ -601,6 +627,30 @@
       </section>
     </div>
 
+    <div id="translatorView" class="layout hidden">
+      <section class="panel">
+        <h2>Переводчик</h2>
+        <div class="form">
+          <div>
+            <label for="translatorInput">Испанский текст</label>
+            <textarea id="translatorInput" placeholder="Escribe una palabra o frase"></textarea>
+          </div>
+          <div class="actions">
+            <button id="translateButton" class="button" type="button">Перевести</button>
+            <button id="addTranslationButton" class="button secondary" type="button" disabled>Добавить в карточки</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Перевод</h2>
+        <div id="translatorOutput" class="translation-output muted">Здесь появится перевод на русский.</div>
+        <p class="helper" style="margin-top: 12px;">
+          Если слово уже есть в вашем словаре, перевод берется локально. Для новых слов используется внешний переводчик.
+        </p>
+      </section>
+    </div>
+
     <div id="historyView" class="hidden">
       <section class="panel">
         <div class="quiz-head">
@@ -662,6 +712,11 @@
     const quizMode = document.querySelector("#quizMode");
     const timerSettings = document.querySelector("#timerSettings");
     const cardSettings = document.querySelector("#cardSettings");
+    const translatorInput = document.querySelector("#translatorInput");
+    const translatorOutput = document.querySelector("#translatorOutput");
+    const translateButton = document.querySelector("#translateButton");
+    const addTranslationButton = document.querySelector("#addTranslationButton");
+    let lastTranslation = null;
 
     document.querySelectorAll(".tab").forEach((tab) => {
       tab.addEventListener("click", () => switchView(tab.dataset.view));
@@ -687,6 +742,8 @@
     document.querySelector("#finishSession").addEventListener("click", () => finishSession("manual"));
     document.querySelector("#nextQuestion").addEventListener("click", makeQuestion);
     document.querySelector("#showHistory").addEventListener("click", renderHistory);
+    translateButton.addEventListener("click", translateSpanishText);
+    addTranslationButton.addEventListener("click", addTranslationToCards);
 
     document.querySelector("#swapDirection").addEventListener("click", () => {
       reverseMode = !reverseMode;
@@ -746,6 +803,68 @@
 
       event.target.value = "";
     });
+
+    async function translateSpanishText() {
+      const source = translatorInput.value.trim();
+      if (!source) {
+        setTranslationResult("Введите испанское слово или фразу.", true);
+        return;
+      }
+
+      addTranslationButton.disabled = true;
+      lastTranslation = null;
+
+      const localResult = findLocalTranslation(source);
+      if (localResult) {
+        lastTranslation = { spanish: source, russian: localResult };
+        setTranslationResult(localResult, false);
+        addTranslationButton.disabled = false;
+        return;
+      }
+
+      setTranslationResult("Перевожу...", true);
+      translateButton.disabled = true;
+
+      try {
+        const params = new URLSearchParams({
+          q: source,
+          langpair: "es|ru"
+        });
+        const response = await fetch(`https://api.mymemory.translated.net/get?${params.toString()}`);
+        if (!response.ok) throw new Error("Translation request failed");
+
+        const data = await response.json();
+        const translated = data?.responseData?.translatedText?.trim();
+        if (!translated) throw new Error("Empty translation");
+
+        lastTranslation = { spanish: source, russian: translated };
+        setTranslationResult(translated, false);
+        addTranslationButton.disabled = false;
+      } catch {
+        setTranslationResult("Не удалось получить перевод. Проверьте интернет или попробуйте позже.", true);
+      } finally {
+        translateButton.disabled = false;
+      }
+    }
+
+    function findLocalTranslation(source) {
+      const normalized = source.toLowerCase();
+      const match = words.find((word) => word.spanish.toLowerCase() === normalized);
+      return match ? match.russian : "";
+    }
+
+    function setTranslationResult(text, muted) {
+      translatorOutput.textContent = text;
+      translatorOutput.classList.toggle("muted", muted);
+    }
+
+    function addTranslationToCards() {
+      if (!lastTranslation) return;
+
+      addWord(lastTranslation.spanish, lastTranslation.russian, true);
+      setTranslationResult(`Добавлено: ${lastTranslation.spanish} — ${lastTranslation.russian}`, false);
+      addTranslationButton.disabled = true;
+    }
 
     function normalizeWord(word) {
       return {
@@ -1230,6 +1349,7 @@
 
       document.querySelector("#trainView").classList.toggle("hidden", view !== "train");
       document.querySelector("#wordsView").classList.toggle("hidden", view !== "words");
+      document.querySelector("#translatorView").classList.toggle("hidden", view !== "translator");
       document.querySelector("#historyView").classList.toggle("hidden", view !== "history");
 
       if (view === "history") renderHistory();
